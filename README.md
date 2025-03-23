@@ -6,10 +6,12 @@
 
 ## 特性
 
-- 支持多种验证规则，包括必填项、可选项、长度限制、范围限制等。
-- 提供了链式调用的方式，方便组合多个验证规则。
-- 支持自定义错误提示信息。
-- 支持 Element Plus 和 Arce Design 等常见的前端框架。
+- 链式调用，方便组合多个验证规则，提供友好的 TypeScript 类型提示
+- 支持多种验证规则，包括字符串、数字、数组等
+- 支持自定义错误提示信息，满足个性化需求
+- 支持扩展自定义验证规则，灵活应对不同场景
+- 适配 Element Plus、Arco Design 等常见前端框架
+- 可脱离表单单独进行数据验证，使用更加灵活
 
 ## 安装
 
@@ -71,12 +73,18 @@ const elRules = {
 - **描述**：获取 ELementUI 验证规则对象。
 - **返回值**：返回验证规则对象。
 
-### `validate(value: any, callback?: (error: boolean, message?: string) => void): Promise<{error:Boolean, message?:string}>`
+### `validate(value: any): Promise<{error:Boolean, message?:string}>`
 
 - **描述**：验证输入值。
 - **参数**：
   - `callback`（可选）：验证结果回调。
 - **返回值**：返回验证结果。
+
+```typescript
+Valr.string().required().max(20).validate('123456789012345678901').then((res) => {
+  console.log(res)
+})
+```
 
 ## `required(message?: ValrMessage): this`
 
@@ -347,18 +355,12 @@ const rules = {
 import { setLocale } from 'Valr'
 
 setLocale({
-  required: '请输入{field}',
-  string: {
-    // min: '最小长度为{min}',
-    // ...
-  },
-  number: {
-    // min: '最小值为{min}',
-    // ...
-  },
-  array: {
-    // min: '最小长度为{min}',
-    // ...
-  }
+  'required': '请输入{field}',
+  'string.min': '最小长度为{min}',
+  'string.max': '最大长度为{max}',
+  'number.min': '最小值为{min}',
+  'number.max': '最大值为{max}',
+  'array.min': '最小长度为{min}',
+  'array.max': '最大长度为{max}',
 })
 ```
