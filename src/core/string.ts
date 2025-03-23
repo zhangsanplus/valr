@@ -1,4 +1,4 @@
-import type { BaseSchemaOptions, StringDescriptor, ValrMessage } from '../types'
+import type { BaseDescriptor, BaseSchemaOptions, ValrMessage } from '../types'
 import type { PasswordOptions } from '../utils/is-password'
 import isByteLength from '../utils/is-byte-length'
 import isValidEmail from '../utils/is-email'
@@ -7,16 +7,15 @@ import isPassword from '../utils/is-password'
 import isValidUrl from '../utils/is-url'
 import BaseSchema from './base'
 
-class StringSchema<U> extends BaseSchema<string, U> {
+class StringSchema extends BaseSchema<string> {
   constructor(options: Omit<BaseSchemaOptions, 'type'>) {
     super({
       type: 'string',
-      ui: options.ui,
       messages: options.messages,
     })
   }
 
-  _test(descriptor: StringDescriptor, value: string) {
+  _test(descriptor: BaseDescriptor<string>, value: string) {
     if (descriptor.kind === 'regex') {
       return descriptor.regex.test(value)
     }
@@ -82,11 +81,12 @@ class StringSchema<U> extends BaseSchema<string, U> {
    * @returns this
    */
   regex(regex: RegExp, message?: ValrMessage) {
-    return this._addDescriptor({
+    this._addDescriptor({
       kind: 'regex',
       regex,
       message,
     })
+    return this
   }
 
   /**
@@ -96,11 +96,12 @@ class StringSchema<U> extends BaseSchema<string, U> {
    * @returns this
    */
   range(limits: [number, number], message?: ValrMessage) {
-    return this._addDescriptor({
+    this._addDescriptor({
       kind: 'range',
       value: limits,
       message,
     })
+    return this
   }
 
   /**
@@ -110,11 +111,12 @@ class StringSchema<U> extends BaseSchema<string, U> {
    * @returns this
    */
   min(limit: number, message?: ValrMessage) {
-    return this._addDescriptor({
+    this._addDescriptor({
       kind: 'min',
       value: limit,
       message,
     })
+    return this
   }
 
   /**
@@ -124,11 +126,12 @@ class StringSchema<U> extends BaseSchema<string, U> {
    * @returns this
    */
   max(limit: number, message?: ValrMessage) {
-    return this._addDescriptor({
+    this._addDescriptor({
       kind: 'max',
       value: limit,
       message,
     })
+    return this
   }
 
   /**
@@ -138,11 +141,12 @@ class StringSchema<U> extends BaseSchema<string, U> {
    * @returns this
    */
   equal(str: string, message?: ValrMessage) {
-    return this._addDescriptor({
+    this._addDescriptor({
       kind: 'equal',
       value: str,
       message,
     })
+    return this
   }
 
   /**
@@ -152,11 +156,12 @@ class StringSchema<U> extends BaseSchema<string, U> {
    * @returns this
    */
   contain(str: string, message?: ValrMessage) {
-    return this._addDescriptor({
+    this._addDescriptor({
       kind: 'contain',
       value: str,
       message,
     })
+    return this
   }
 
   /**
@@ -166,11 +171,12 @@ class StringSchema<U> extends BaseSchema<string, U> {
    * @returns this
    */
   len(length: number, message?: ValrMessage) {
-    return this._addDescriptor({
+    this._addDescriptor({
       kind: 'len',
       value: length,
       message,
     })
+    return this
   }
 
   /**
@@ -180,11 +186,12 @@ class StringSchema<U> extends BaseSchema<string, U> {
    * @returns this
    */
   byteLen(limits: [number, number], message?: ValrMessage) {
-    return this._addDescriptor({
+    this._addDescriptor({
       kind: 'byteLen',
       value: limits,
       message,
     })
+    return this
   }
 
   /**
@@ -194,11 +201,12 @@ class StringSchema<U> extends BaseSchema<string, U> {
    * @returns this
    */
   startsWith(str: string, message?: ValrMessage) {
-    return this._addDescriptor({
+    this._addDescriptor({
       kind: 'startsWith',
       value: str,
       message,
     })
+    return this
   }
 
   /**
@@ -208,11 +216,12 @@ class StringSchema<U> extends BaseSchema<string, U> {
    * @returns this
    */
   endsWith(str: string, message?: ValrMessage) {
-    return this._addDescriptor({
+    this._addDescriptor({
       kind: 'endsWith',
       value: str,
       message,
     })
+    return this
   }
 
   /**
@@ -221,10 +230,11 @@ class StringSchema<U> extends BaseSchema<string, U> {
    * @returns this
    */
   uppercase(message?: ValrMessage) {
-    return this._addDescriptor({
+    this._addDescriptor({
       kind: 'uppercase',
       message,
     })
+    return this
   }
 
   /**
@@ -233,10 +243,11 @@ class StringSchema<U> extends BaseSchema<string, U> {
    * @returns this
    */
   lowercase(message?: ValrMessage) {
-    return this._addDescriptor({
+    this._addDescriptor({
       kind: 'lowercase',
       message,
     })
+    return this
   }
 
   /**
@@ -245,10 +256,11 @@ class StringSchema<U> extends BaseSchema<string, U> {
    * @returns this
    */
   alphanumeric(message?: ValrMessage) {
-    return this._addDescriptor({
+    this._addDescriptor({
       kind: 'alphanumeric',
       message,
     })
+    return this
   }
 
   /**
@@ -257,10 +269,11 @@ class StringSchema<U> extends BaseSchema<string, U> {
    * @returns this
    */
   phone(message?: ValrMessage) {
-    return this._addDescriptor({
+    this._addDescriptor({
       kind: 'phone',
       message,
     })
+    return this
   }
 
   /**
@@ -269,10 +282,11 @@ class StringSchema<U> extends BaseSchema<string, U> {
    * @returns this
    */
   email(message?: ValrMessage) {
-    return this._addDescriptor({
+    this._addDescriptor({
       kind: 'email',
       message,
     })
+    return this
   }
 
   /**
@@ -281,10 +295,11 @@ class StringSchema<U> extends BaseSchema<string, U> {
    * @returns this
    */
   url(message?: ValrMessage) {
-    return this._addDescriptor({
+    this._addDescriptor({
       kind: 'url',
       message,
     })
+    return this
   }
 
   /**
@@ -293,10 +308,11 @@ class StringSchema<U> extends BaseSchema<string, U> {
    * @returns this
    */
   ip(message?: ValrMessage) {
-    return this._addDescriptor({
+    this._addDescriptor({
       kind: 'ip',
       message,
     })
+    return this
   }
 
   /**
@@ -306,11 +322,12 @@ class StringSchema<U> extends BaseSchema<string, U> {
    * @returns this
    */
   password(options?: PasswordOptions, message?: ValrMessage) {
-    return this._addDescriptor({
+    this._addDescriptor({
       kind: 'password',
       message,
       value: options,
     })
+    return this
   }
 }
 

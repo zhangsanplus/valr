@@ -1,16 +1,15 @@
-import type { ArrayDescriptor, BaseSchemaOptions, ValrMessage } from '../types'
+import type { BaseDescriptor, BaseSchemaOptions, ValrMessage } from '../types'
 import BaseSchema from './base'
 
-class ArraySchema<U> extends BaseSchema<any[], U> {
+class ArraySchema extends BaseSchema<any[]> {
   constructor(options: Omit<BaseSchemaOptions, 'type'>) {
     super({
       type: 'array',
-      ui: options.ui,
       messages: options.messages,
     })
   }
 
-  _test(descriptor: ArrayDescriptor, value: any[]) {
+  _test(descriptor: BaseDescriptor<any[]>, value: any[]) {
     if (descriptor.kind === 'range') {
       const [min, max] = descriptor.value
       return value.length >= min && value.length <= max
@@ -34,11 +33,12 @@ class ArraySchema<U> extends BaseSchema<any[], U> {
    * @returns this
    */
   len(length: number, message?: ValrMessage) {
-    return this._addDescriptor({
+    this._addDescriptor({
       kind: 'len',
       value: length,
       message,
     })
+    return this
   }
 
   /**
@@ -48,11 +48,12 @@ class ArraySchema<U> extends BaseSchema<any[], U> {
    * @returns this
    */
   min(limit: number, message?: ValrMessage) {
-    return this._addDescriptor({
+    this._addDescriptor({
       kind: 'min',
       value: limit,
       message,
     })
+    return this
   }
 
   /**
@@ -62,11 +63,12 @@ class ArraySchema<U> extends BaseSchema<any[], U> {
    * @returns this
    */
   max(limit: number, message?: ValrMessage) {
-    return this._addDescriptor({
+    this._addDescriptor({
       kind: 'max',
       value: limit,
       message,
     })
+    return this
   }
 
   /**
@@ -76,11 +78,12 @@ class ArraySchema<U> extends BaseSchema<any[], U> {
    * @returns this
    */
   range(limits: [number, number], message?: ValrMessage) {
-    return this._addDescriptor({
+    this._addDescriptor({
       kind: 'range',
       value: limits,
       message,
     })
+    return this
   }
 }
 

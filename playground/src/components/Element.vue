@@ -1,6 +1,6 @@
 <template>
   <h2>Element Plus</h2>
-  <el-form ref="formRef" :model="form" :rules="rules" label-width="100px">
+  <el-form ref="formRef" :model="form" :rules="rules" :validate-on-rule-change="false" label-width="100px">
     <el-form-item label="姓名" prop="name">
       <el-input v-model="form.name" />
     </el-form-item>
@@ -25,24 +25,32 @@
     </el-form-item>
     <el-form-item label="Resources">
       <el-radio-group v-model="form.resource">
-        <el-radio value="Sponsor">Sponsor</el-radio>
-        <el-radio value="Venue">Venue</el-radio>
+        <el-radio value="Sponsor">
+          Sponsor
+        </el-radio>
+        <el-radio value="Venue">
+          Venue
+        </el-radio>
       </el-radio-group>
     </el-form-item>
     <el-form-item label="Email" prop="email">
       <el-input v-model="form.email" />
     </el-form-item>
     <el-form-item>
-      <el-button type="primary" @click="onSubmit">创建</el-button>
-      <el-button @click="resetForm">重置</el-button>
+      <el-button type="primary" @click="onSubmit">
+        创建
+      </el-button>
+      <el-button @click="resetForm">
+        重置
+      </el-button>
     </el-form-item>
   </el-form>
   {{ form }}
 </template>
 
 <script lang="ts" setup>
-import { ref, reactive } from 'vue'
-import { ElementValidator as Validator } from 'valr'
+import Valr from 'valr'
+import { computed, reactive, ref } from 'vue'
 
 const formRef = ref()
 const form = reactive({
@@ -54,27 +62,27 @@ const form = reactive({
   email: '',
 })
 
-const rules = {
-  name: Validator.string().required().max(20).getRules(),
-  age: Validator.number().required().decimal(2).range([0.01, 100], `范围 0.01 到 100`).getRules(),
-  score: Validator.string().optional().getRules(),
-  email: Validator.string().required().email().getRules(),
-  type: Validator.array().min(2).custom((value) => {
-    if (value.length > 0 && !value.includes('Promotion activities')) {
-      return '记得选择 Promotion activities'
-    }
-  }).getRules(),
-}
+const rules = computed(() => {
+  return {
+    name: Valr.string().required().max(20).getElRules(),
+    age: Valr.number().required().decimal(2).range([0.01, 100], `范围 0.01 到 100`).getElRules(),
+    score: Valr.string().optional().getElRules(),
+    email: Valr.string().required().email().getElRules(),
+    type: Valr.array().min(2).custom((value) => {
+      if (value.length > 0 && !value.includes('Promotion activities')) {
+        return 'Promotion activities is required'
+      }
+    }).getElRules(),
+  }
+})
 
-const onSubmit = () => {
+function onSubmit() {
   formRef.value.validate((valid: boolean) => {
-    if (valid) {
-      console.log('submit!')
-    }
+    console.log('submit', valid)
   })
 }
 
-const resetForm = () => {
+function resetForm() {
   formRef.value.resetFields()
 }
 </script>

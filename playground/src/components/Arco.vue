@@ -21,8 +21,12 @@
     </a-form-item>
     <a-form-item>
       <a-space>
-        <a-button type="primary" html-type="submit">Submit</a-button>
-        <a-button @click="resetFields">Reset</a-button>
+        <a-button type="primary" html-type="submit">
+          Submit
+        </a-button>
+        <a-button @click="resetFields">
+          Reset
+        </a-button>
       </a-space>
     </a-form-item>
   </a-form>
@@ -30,8 +34,11 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, reactive, computed } from 'vue';
-import { ArcoValidator as Valr } from 'valr'
+import Valr from 'valr'
+import { computed, reactive, ref } from 'vue'
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
 
 const formRef = ref()
 const form = reactive({
@@ -41,25 +48,37 @@ const form = reactive({
   email: '',
   ip: '192.168.2.1',
   url: '',
-});
+})
+
+// 脱离表单组件，单独使用
+Valr.string().optional().email().validate('fuck').then((res) => {
+  console.log(res)
+})
+
+Valr.number().required().decimal(2).range([0.01, 100], t('range', [0.01, 100])).validate('fuck').then((res) => {
+  console.log(res)
+})
+
+Valr.string().required().password().validate('123456', (error, message) => {
+  console.log({ error, message })
+})
 
 const rules = computed(() => {
   return {
     name: Valr.string().required().dirtyWords('fuck').max(20).getRules(),
     password: Valr.string().required().password().getRules(),
     password2: Valr.string().required().equal(form.password).getRules(),
-    email: Valr.string().optional().email().getRules(),
+    email: Valr.string().optional().email(t('email')).getRules(),
     ip: Valr.string().required().ip().getRules(),
     url: Valr.string().required().url().getRules(),
   }
 })
 
-const handleSubmit = (res: any) => {
+function handleSubmit(res: any) {
   console.log('values:', res.values, '\nerrors:', res.errors)
 }
 
-
-const resetFields = () => {
+function resetFields() {
   formRef.value?.resetFields()
 }
 </script>

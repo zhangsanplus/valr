@@ -22,7 +22,7 @@ npm install valr
 ## 用法
 
 ```typescript
-import { ElementValidator as Valr } from 'valr'
+import Valr from 'valr'
 
 const rules = {
   name: Valr.string().required().max(20).getRules(),
@@ -30,9 +30,25 @@ const rules = {
   type: Valr.array().optional().max(3).getRules(),
   score: Valr.number().optional().decimal(2).range(0.01, 100, `范围 0.01 到 100`).getRules(),
 }
+
+const elRules = {
+  name: Valr.string().required().max(20).getElRules(),
+  age: Valr.number().required().min(18).max(60).getElRules(),
+  type: Valr.array().optional().max(3).getElRules(),
+  score: Valr.number().optional().decimal(2).range(0.01, 100, `范围 0.01 到 100`).getElRules(),
+}
 ```
 
 ```html
+<a-form :model="form" :rules="rules" ref="formRef">
+  <a-form-item label="姓名" field="name" validate-trigger="blur">
+    <a-input v-model="form.name"></a-input>
+  </a-form-item>
+  <a-form-item label="年龄" field="age" validate-trigger="blur">
+    <a-input v-model="form.age"></a-input>
+  </a-form-item>
+</a-form>
+
 <el-form :model="form" :rules="rules" ref="formRef">
   <el-form-item label="姓名" prop="name">
     <el-input v-model="form.name"></el-input>
@@ -45,10 +61,22 @@ const rules = {
 
 ## 公共方法
 
-### `getRules(): ValrRule[]`
+### `getRules(): ValrFormRule[]`
 
 - **描述**：获取验证规则对象。
 - **返回值**：返回验证规则对象。
+
+### `getElRules(): ElFormRule[]`
+
+- **描述**：获取 ELementUI 验证规则对象。
+- **返回值**：返回验证规则对象。
+
+### `validate(value: any, callback?: (error: boolean, message?: string) => void): Promise<{error:Boolean, message?:string}>`
+
+- **描述**：验证输入值。
+- **参数**：
+  - `callback`（可选）：验证结果回调。
+- **返回值**：返回验证结果。
 
 ## `required(message?: ValrMessage): this`
 
@@ -64,13 +92,13 @@ const rules = {
   - `data`（可选）：可选值的数组或判断函数。
 - **返回值**：返回 `this`，以便链式调用。
 
-## `custom(check: (value: T, input: any) => string | undefined): this`
+## `custom(validator: (value: T, input: any) => string | undefined): this`
 - **描述**：设置自定义验证规则。
 - **参数**：
-  - `check`：验证函数，返回验证失败时的错误提示信息。
+  - `fn`：验证函数，返回验证失败时的错误提示信息。
 - **返回值**：返回 `this`，以便链式调用。
 
-## `concat(rule: ValrRule<U>): this`
+## `concat(rule: ValrFormRule<U>): this`
 - **描述**：合并验证规则。
 - **参数**：
   - `rule`：要合并的验证规则对象。
@@ -307,10 +335,10 @@ declare module 'valr' {
 ```
 
 ```typescript
-import { ElementValidator as Valr } from 'valr'
+import Valr from 'valr'
 
 const rules = {
-  say: Validator.string().dirtyWords('fuck').getRules(),
+  say: Valr.string().dirtyWords('fuck').getRules(),
 }
 ```
 

@@ -4,6 +4,10 @@ import 'valr'
 
 declare module 'valr' {
   interface StringSchema {
+    /**
+     * 校验是否为脏词
+     * @param value 校验值
+     */
     dirtyWords: (value: string) => this
   }
 }

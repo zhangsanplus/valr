@@ -12,7 +12,12 @@
     "url": "git+https://github.com/zhangsanplus/valr.git"
   },
   "bugs": "https://github.com/zhangsanplus/valr/issues",
-  "keywords": [],
+  "keywords": [
+    "form",
+    "rules",
+    "validate",
+    "validator"
+  ],
   "sideEffects": false,
   "exports": {
     ".": {
@@ -44,10 +49,12 @@
     "typecheck": "tsc --noEmit",
     "prepare": "simple-git-hooks"
   },
+  "dependencies": {
+    "async-validator": "^4.2.5"
+  },
   "devDependencies": {
     "@antfu/eslint-config": "^3.14.0",
     "@antfu/ni": "^23.2.0",
-    "@arco-design/web-vue": "^2.56.3",
     "@types/node": "^22.10.5",
     "bumpp": "^9.10.0",
     "eslint": "^9.18.0",

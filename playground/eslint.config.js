@@ -8,5 +8,6 @@ export default antfu({
   rules: {
     'no-console': 'off',
     'no-debugger': 'off',
+    'vue/block-order': [2, { order: ['template', 'script', 'style'] }],
   },
 })

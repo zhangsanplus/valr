@@ -2,9 +2,9 @@ import type { IpVersion } from './utils/is-ip'
 import type { PasswordOptions } from './utils/is-password'
 import type { messages } from './utils/messages'
 
-type ElFormTrigger = 'change' | 'blur' | ('change' | 'blur')[]
-type ElFormValidator = (_: any, value: any, callback: (error?: Error) => void) => void
-interface ElFormRule {
+export type ElFormTrigger = 'change' | 'blur' | ('change' | 'blur')[]
+export type ElFormValidator = (_: any, value: any, callback: (error?: Error) => void) => void
+export interface ElFormRule {
   validator?: ElFormValidator
   type?: 'string' | 'number' | 'array'
   trigger?: ElFormTrigger
@@ -14,9 +14,9 @@ interface ElFormRule {
   max?: number
 }
 
-type ArcoFormValidator = (value: any, callback: (error?: string) => void) => void
-interface ArcoFormRule {
-  validator?: ArcoFormValidator
+type ValrFormValidator = (value: any, callback: (error?: string) => void) => void
+export interface ValrFormRule {
+  validator?: ValrFormValidator
   type?: 'string' | 'number' | 'array'
   required?: boolean
   message?: string
@@ -25,29 +25,20 @@ interface ArcoFormRule {
 }
 
 export type ValrMessages = typeof messages
-export type ValrMessage<T = any> = string | ((value: T) => string)
-export type ValrTrigger<U> = U extends 'ele' ? ElFormTrigger : never
-export type ValrValidator<U> = U extends 'ele' ? ElFormValidator : ArcoFormValidator
-export type ValrRule<U> = U extends 'ele' ? ElFormRule : ArcoFormRule
+export type ValrMessage = string | ((...args: any[]) => string)
 
 export interface BaseSchemaOptions {
   messages: ValrMessages
   type: 'string' | 'number' | 'array'
-  ui: 'ele' | 'arco'
 }
 
-export type BaseDescriptor<T> = T extends string
-  ? StringDescriptor
-  : (T extends number ? NumberDescriptor : ArrayDescriptor)
-
-type CommonDescriptor<T = any> =
+export type CommonDescriptor<T> =
   | { kind: 'custom', validator: (value: T, input: any) => string | undefined }
   | { kind: 'min', value: number, message?: ValrMessage }
   | { kind: 'max', value: number, message?: ValrMessage }
   | { kind: 'range', value: [number, number], message?: ValrMessage }
 
 export type NumberDescriptor =
-  | CommonDescriptor
   | { kind: 'integer', message?: ValrMessage }
   | { kind: 'decimal', value: number, message?: ValrMessage }
   | { kind: 'equal', value: number, message?: ValrMessage }
@@ -60,7 +51,6 @@ export type NumberDescriptor =
   | { kind: 'port', message?: ValrMessage }
 
 export type StringDescriptor =
-  | CommonDescriptor
   | { kind: 'regex', regex: RegExp, message?: ValrMessage }
   | { kind: 'equal', value: string, message?: ValrMessage }
   | { kind: 'contain', value: string, message?: ValrMessage }
@@ -78,5 +68,12 @@ export type StringDescriptor =
   | { kind: 'password', value?: PasswordOptions, message?: ValrMessage }
 
 export type ArrayDescriptor =
-  | CommonDescriptor
   | { kind: 'len', value: number, message?: ValrMessage }
+
+export type TypeDescriptor<T> = T extends string
+  ? StringDescriptor
+  : (T extends number ? NumberDescriptor : ArrayDescriptor)
+
+export type BaseDescriptor<T> = TypeDescriptor<T> | CommonDescriptor<T>
+
+export type RuleDescriptor<T> = TypeDescriptor<T> | CommonDescriptor<T> | ValrFormRule

@@ -1,19 +1,18 @@
-import type { BaseSchemaOptions, NumberDescriptor, ValrMessage } from '../types'
+import type { BaseDescriptor, BaseSchemaOptions, ValrMessage } from '../types'
 import isDecimal from '../utils/is-decimal'
 import isInteger from '../utils/is-integer'
 import isPort from '../utils/is-port'
 import BaseSchema from './base'
 
-class NumberSchema<U> extends BaseSchema<number, U> {
+class NumberSchema extends BaseSchema<number> {
   constructor(options: Omit<BaseSchemaOptions, 'type'>) {
     super({
       type: 'number',
-      ui: options.ui,
       messages: options.messages,
     })
   }
 
-  _test(descriptor: NumberDescriptor, value: number) {
+  _test(descriptor: BaseDescriptor<number>, value: number) {
     if (descriptor.kind === 'integer') {
       return isInteger(value)
     }
@@ -63,10 +62,11 @@ class NumberSchema<U> extends BaseSchema<number, U> {
    * @returns this
    */
   integer(message?: ValrMessage) {
-    return this._addDescriptor({
+    this._addDescriptor({
       kind: 'integer',
       message,
     })
+    return this
   }
 
   /**
@@ -76,11 +76,12 @@ class NumberSchema<U> extends BaseSchema<number, U> {
    * @returns this
    */
   decimal(digits: number, message?: ValrMessage) {
-    return this._addDescriptor({
+    this._addDescriptor({
       kind: 'decimal',
       value: digits,
       message,
     })
+    return this
   }
 
   /**
@@ -90,11 +91,12 @@ class NumberSchema<U> extends BaseSchema<number, U> {
    * @returns this
    */
   range(limits: [number, number], message?: ValrMessage) {
-    return this._addDescriptor({
+    this._addDescriptor({
       kind: 'range',
       value: limits,
       message,
     })
+    return this
   }
 
   /**
@@ -104,11 +106,12 @@ class NumberSchema<U> extends BaseSchema<number, U> {
    * @returns this
    */
   min(limit: number, message?: ValrMessage) {
-    return this._addDescriptor({
+    this._addDescriptor({
       kind: 'min',
       value: limit,
       message,
     })
+    return this
   }
 
   /**
@@ -118,11 +121,12 @@ class NumberSchema<U> extends BaseSchema<number, U> {
    * @returns this
    */
   max(limit: number, message?: ValrMessage) {
-    return this._addDescriptor({
+    this._addDescriptor({
       kind: 'max',
       value: limit,
       message,
     })
+    return this
   }
 
   /**
@@ -132,11 +136,12 @@ class NumberSchema<U> extends BaseSchema<number, U> {
    * @returns this
    */
   gt(value: number, message?: ValrMessage) {
-    return this._addDescriptor({
+    this._addDescriptor({
       kind: 'gt',
       value,
       message,
     })
+    return this
   }
 
   /**
@@ -146,11 +151,12 @@ class NumberSchema<U> extends BaseSchema<number, U> {
    * @returns this
    */
   gte(value: number, message?: ValrMessage) {
-    return this._addDescriptor({
+    this._addDescriptor({
       kind: 'min',
       value,
       message,
     })
+    return this
   }
 
   /**
@@ -160,11 +166,12 @@ class NumberSchema<U> extends BaseSchema<number, U> {
    * @returns this
    */
   lt(value: number, message?: ValrMessage) {
-    return this._addDescriptor({
+    this._addDescriptor({
       kind: 'lt',
       value,
       message,
     })
+    return this
   }
 
   /**
@@ -174,11 +181,12 @@ class NumberSchema<U> extends BaseSchema<number, U> {
    * @returns this
    */
   lte(value: number, message?: ValrMessage) {
-    return this._addDescriptor({
+    this._addDescriptor({
       kind: 'max',
       value,
       message,
     })
+    return this
   }
 
   /**
@@ -188,11 +196,12 @@ class NumberSchema<U> extends BaseSchema<number, U> {
    * @returns this
    */
   equal(value: number, message?: ValrMessage) {
-    return this._addDescriptor({
+    this._addDescriptor({
       kind: 'equal',
       value,
       message,
     })
+    return this
   }
 
   /**
@@ -201,10 +210,11 @@ class NumberSchema<U> extends BaseSchema<number, U> {
    * @returns this
    */
   positive(message?: ValrMessage) {
-    return this._addDescriptor({
+    this._addDescriptor({
       kind: 'positive',
       message,
     })
+    return this
   }
 
   /**
@@ -213,10 +223,11 @@ class NumberSchema<U> extends BaseSchema<number, U> {
    * @returns this
    */
   nonnegative(message?: ValrMessage) {
-    return this._addDescriptor({
+    this._addDescriptor({
       kind: 'nonnegative',
       message,
     })
+    return this
   }
 
   /**
@@ -225,10 +236,11 @@ class NumberSchema<U> extends BaseSchema<number, U> {
    * @returns this
    */
   negative(message?: ValrMessage) {
-    return this._addDescriptor({
+    this._addDescriptor({
       kind: 'negative',
       message,
     })
+    return this
   }
 
   /**
@@ -237,10 +249,11 @@ class NumberSchema<U> extends BaseSchema<number, U> {
    * @returns this
    */
   nonpositive(message?: ValrMessage) {
-    return this._addDescriptor({
+    this._addDescriptor({
       kind: 'nonpositive',
       message,
     })
+    return this
   }
 
   /**
@@ -249,10 +262,11 @@ class NumberSchema<U> extends BaseSchema<number, U> {
    * @returns this
    */
   port(message?: ValrMessage) {
-    return this._addDescriptor({
+    this._addDescriptor({
       kind: 'port',
       message,
     })
+    return this
   }
 }
 
