@@ -77,3 +77,9 @@ export type TypeDescriptor<T> = T extends string
 export type BaseDescriptor<T> = TypeDescriptor<T> | CommonDescriptor<T>
 
 export type RuleDescriptor<T> = TypeDescriptor<T> | CommonDescriptor<T> | ValrFormRule
+
+export interface Valr {
+  string: StringDescriptor
+  number: NumberDescriptor
+  array: ArrayDescriptor
+}
