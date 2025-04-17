@@ -12,6 +12,12 @@ abstract class BaseSchema<T> {
   constructor(options: BaseSchemaOptions) {
     this._type = options.type
     this._messages = options.messages
+
+    this.custom((value) => {
+      if (!this._isTypeValid(value)) {
+        return this._messages[`type.${this._type}`]
+      }
+    })
   }
 
   /**
@@ -21,7 +27,15 @@ abstract class BaseSchema<T> {
    * @param input 原始输入值
    * @returns 是否校验通过
    */
-  abstract _test(descriptor: BaseDescriptor<T>, value: T, input: any): boolean
+  abstract _test(descriptor: BaseDescriptor<T>, value: T, input: unknown): boolean
+
+  /**
+   * 添加校验描述符
+   * @param descriptor 校验配置描述符
+   */
+  protected _addDescriptor(descriptor: RuleDescriptor<T>) {
+    this._descriptors.push(descriptor)
+  }
 
   /**
    * 获取错误消息
@@ -46,58 +60,55 @@ abstract class BaseSchema<T> {
   }
 
   /**
-   * 添加校验描述符
-   * @param descriptor 校验配置描述符
+   * 类型保护检查
    */
-  protected _addDescriptor(descriptor: RuleDescriptor<T>) {
-    this._descriptors.push(descriptor)
+  private _isTypeValid(value: unknown): value is T {
+    switch (this._type) {
+      case 'string':
+        return typeof value === 'string'
+      case 'number':
+        return typeof value === 'number' && !Number.isNaN(value)
+      case 'array':
+        return Array.isArray(value)
+      default:
+        return true
+    }
   }
 
   /**
    * 类型转换处理器
-   * @param value 原始输入值
-   * @returns 转换结果和错误信息
+   * @param input 原始输入值
+   * @returns 转换后的值
    */
-  private _convertValue(value: any): { converted: any, error?: string } {
-    if (this._type === 'string') {
-      return { converted: String(value) }
+  private _convertValue(input: unknown): T {
+    switch (this._type) {
+      case 'string':
+        return String(input) as T
+      case 'number':
+        return Number(input) as T
+      default:
+        return input as T
     }
-
-    if (this._type === 'number') {
-      const num = Number(value)
-      return Number.isNaN(num)
-        ? { error: this._messages['types.number'], converted: num }
-        : { converted: num }
-    }
-
-    if (this._type === 'array' && !Array.isArray(value)) {
-      return { error: this._messages['types.array'], converted: value }
-    }
-
-    return { converted: value }
   }
 
   /**
    * 校验核心逻辑
    * @param descriptors 校验描述符列表
-   * @param value 待校验值
+   * @param input 待校验值
    * @returns 错误消息或undefined
    */
-  protected _validator(descriptors: BaseDescriptor<T>[], value: any): string | undefined {
-    if (this._optional?.(value))
+  protected _validator(descriptors: BaseDescriptor<T>[], input: unknown): string | undefined {
+    if (this._optional?.(input))
       return
 
-    const { converted, error } = this._convertValue(value)
-    if (error)
-      return error
-
+    const value = this._convertValue(input)
     for (const descriptor of descriptors) {
       if (descriptor.kind === 'custom') {
-        const customError = descriptor.validator(converted, value)
+        const customError = descriptor.validator(value, input)
         if (customError)
           return customError
       }
-      else if (!this._test(descriptor, converted, value)) {
+      else if (!this._test(descriptor, value, input)) {
         return this._getMessage(descriptor)
       }
     }
@@ -110,10 +121,7 @@ abstract class BaseSchema<T> {
    */
   protected _toRule(descriptors: BaseDescriptor<T>[]): ValrFormRule {
     return {
-      type: this._type,
-      validator: (value, callback) => {
-        callback(this._validator(descriptors, value))
-      },
+      validator: (input, cb) => cb(this._validator(descriptors, input)),
     }
   }
 
@@ -165,7 +173,7 @@ abstract class BaseSchema<T> {
    * 验证输入值
    * @param value 输入值
    */
-  validate(value: any, callback?: (error: boolean, message?: string) => void) {
+  validate(value: unknown, callback?: (error: boolean, message?: string) => void) {
     const rules = this.getElRules()
     const validator = new AsyncValidator({ value: rules })
 
@@ -200,7 +208,7 @@ abstract class BaseSchema<T> {
    * @param validator 自定义校验函数
    * @returns this
    */
-  custom(validator: (value: T, input: any) => string | undefined): this {
+  custom(validator: (value: T, input: unknown) => string | undefined): this {
     this._addDescriptor({
       kind: 'custom',
       validator,
@@ -226,10 +234,10 @@ abstract class BaseSchema<T> {
    * @param whitelist 可选值白名单
    * @returns this
    */
-  optional(whitelist: ((input: any) => boolean) | any[] = ['', undefined, null]): this {
+  optional(whitelist: ((input: unknown) => boolean) | any[] = ['', undefined, null]): this {
     this._optional = typeof whitelist === 'function'
       ? whitelist
-      : (input: any) => whitelist.includes(input)
+      : input => whitelist.includes(input)
     return this
   }
 }

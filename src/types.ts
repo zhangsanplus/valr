@@ -40,7 +40,7 @@ export type CommonDescriptor<T> =
 
 export type NumberDescriptor =
   | { kind: 'integer', message?: ValrMessage }
-  | { kind: 'decimal', value: number, message?: ValrMessage }
+  | { kind: 'float', value: number, message?: ValrMessage }
   | { kind: 'equal', value: number, message?: ValrMessage }
   | { kind: 'gt', value: number, message?: ValrMessage }
   | { kind: 'lt', value: number, message?: ValrMessage }
@@ -51,11 +51,11 @@ export type NumberDescriptor =
   | { kind: 'port', message?: ValrMessage }
 
 export type StringDescriptor =
-  | { kind: 'regex', regex: RegExp, message?: ValrMessage }
-  | { kind: 'equal', value: string, message?: ValrMessage }
-  | { kind: 'contain', value: string, message?: ValrMessage }
   | { kind: 'len', value: number, message?: ValrMessage }
   | { kind: 'byteLen', value: [number, number], message?: ValrMessage }
+  | { kind: 'contain', value: string, message?: ValrMessage }
+  | { kind: 'equal', value: string, message?: ValrMessage }
+  | { kind: 'regex', regex: RegExp, message?: ValrMessage }
   | { kind: 'startsWith', value: string, message?: ValrMessage }
   | { kind: 'endsWith', value: string, message?: ValrMessage }
   | { kind: 'uppercase', message?: ValrMessage }
@@ -69,6 +69,9 @@ export type StringDescriptor =
 
 export type ArrayDescriptor =
   | { kind: 'len', value: number, message?: ValrMessage }
+  | { kind: 'includes', value: any[], message?: ValrMessage }
+  | { kind: 'excludes', value: any[], message?: ValrMessage }
+  | { kind: 'unique', message?: ValrMessage }
 
 export type TypeDescriptor<T> = T extends string
   ? StringDescriptor

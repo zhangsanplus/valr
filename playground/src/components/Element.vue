@@ -65,8 +65,8 @@ const form = reactive({
 const rules = computed(() => {
   return {
     name: Valr.string().required().max(20).getElRules(),
-    age: Valr.number().required().decimal(2).range([0.01, 100], `范围 0.01 到 100`).getElRules(),
-    score: Valr.string().optional().getElRules(),
+    age: Valr.number().required().float(2).range(0.01, 100, `范围 0.01 到 100`).getElRules(),
+    score: Valr.number().optional().getElRules(),
     email: Valr.string().required().email().getElRules(),
     type: Valr.array().min(2).custom((value) => {
       if (value.length > 0 && !value.includes('Promotion activities')) {

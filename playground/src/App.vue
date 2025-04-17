@@ -21,9 +21,9 @@ import Element from './components/Element.vue'
 
 const { t, locale } = useI18n()
 
-addMethod('string', 'dirtyWords', (input, name) => {
-  if (input === name) {
-    return t('notEqual', [input])
+addMethod('string', 'say', (input, name) => {
+  if (input !== name) {
+    return t('input', [name])
   }
 })
 

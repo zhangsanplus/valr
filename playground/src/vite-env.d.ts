@@ -8,6 +8,6 @@ declare module 'valr' {
      * 校验是否为脏词
      * @param value 校验值
      */
-    dirtyWords: (value: string) => this
+    say: (value: string) => this
   }
 }

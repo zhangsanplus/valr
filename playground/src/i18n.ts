@@ -5,13 +5,13 @@ const messages = {
     range: 'Range: {0} to {1}',
     required: 'This field is required ~~',
     email: 'Please enter a valid email address ~~',
-    notEqual: 'Cannot input {0}',
+    input: 'Please input {0}',
   },
   zh: {
     range: '范围：{0} 到 {1}',
     required: '这是必填项 ~~',
     email: '请输入有效的电子邮件地址 ~~',
-    notEqual: '不能输入 {0}',
+    input: '请输入 {0}',
   },
 }
 

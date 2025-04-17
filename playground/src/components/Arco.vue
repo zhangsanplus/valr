@@ -34,7 +34,7 @@
 </template>
 
 <script lang="ts" setup>
-import Valr from 'valr'
+import Valr, { schemaToRules } from 'valr'
 import { computed, reactive, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 
@@ -50,30 +50,29 @@ const form = reactive({
   url: '',
 })
 
-// 脱离表单组件，单独使用
-Valr.string().optional().email().validate('fuck').then((res) => {
-  console.log(res)
-})
-
-Valr.number().required().decimal(2).range([0.01, 100], t('range', [0.01, 100])).validate('fuck').then((res) => {
-  console.log(res)
-})
-
-Valr.string().required().password().validate('123456', (error, message) => {
-  console.log({ error, message })
-})
-
-const rules = computed(() => {
+const ValrSchema = computed(() => {
   return {
-    name: Valr.string().required().dirtyWords('fuck').max(20).getRules(),
-    password: Valr.string().required().password().getRules(),
-    password2: Valr.string().required().equal(form.password).getRules(),
-    email: Valr.string().optional().email(t('email')).getRules(),
-    ip: Valr.string().required().ip().getRules(),
-    url: Valr.string().required().url().getRules(),
+    name: Valr.string().required().say('hello').max(20),
+    password: Valr.string().required().password(),
+    password2: Valr.string().required().equal(form.password),
+    email: Valr.string().optional().email(t('email')),
+    ip: Valr.string().required().ip('v4'),
+    url: Valr.string().required().url(),
   }
 })
 
+const rules = computed(() => schemaToRules(ValrSchema.value))
+
+// 脱离表单组件，单独使用
+ValrSchema.value.name.validate('fuck').then((res) => {
+  console.log(res)
+})
+
+ValrSchema.value.email.validate('12345', (error, message) => {
+  console.log(error, message)
+})
+
+// 表单提交
 function handleSubmit(res: any) {
   console.log('values:', res.values, '\nerrors:', res.errors)
 }

@@ -1,4 +1,5 @@
 import type { BaseDescriptor, BaseSchemaOptions, ValrMessage } from '../types'
+import type { IpVersion } from '../utils/is-ip'
 import type { PasswordOptions } from '../utils/is-password'
 import isByteLength from '../utils/is-byte-length'
 import isValidEmail from '../utils/is-email'
@@ -16,30 +17,30 @@ class StringSchema extends BaseSchema<string> {
   }
 
   _test(descriptor: BaseDescriptor<string>, value: string) {
-    if (descriptor.kind === 'regex') {
+    if (descriptor.kind === 'min') {
+      return value.length >= descriptor.value
+    }
+    else if (descriptor.kind === 'max') {
+      return value.length <= descriptor.value
+    }
+    else if (descriptor.kind === 'regex') {
       return descriptor.regex.test(value)
     }
     else if (descriptor.kind === 'range') {
       const [min, max] = descriptor.value
       return value.length >= min && value.length <= max
     }
-    else if (descriptor.kind === 'min') {
-      return value.length >= descriptor.value
+    else if (descriptor.kind === 'len') {
+      return value.length === descriptor.value
     }
-    else if (descriptor.kind === 'max') {
-      return value.length <= descriptor.value
+    else if (descriptor.kind === 'byteLen') {
+      return isByteLength(value, descriptor.value)
     }
     else if (descriptor.kind === 'equal') {
       return value === descriptor.value
     }
     else if (descriptor.kind === 'contain') {
       return value.includes(descriptor.value)
-    }
-    else if (descriptor.kind === 'len') {
-      return value.length === descriptor.value
-    }
-    else if (descriptor.kind === 'byteLen') {
-      return isByteLength(value, descriptor.value)
     }
     else if (descriptor.kind === 'uppercase') {
       return value === value.toUpperCase()
@@ -91,14 +92,15 @@ class StringSchema extends BaseSchema<string> {
 
   /**
    * 字符串长度范围
-   * @param limits 范围 [min, max]
+   * @param min 最小值
+   * @param max 最大值
    * @param message 错误信息
    * @returns this
    */
-  range(limits: [number, number], message?: ValrMessage) {
+  range(min: number, max: number, message?: ValrMessage) {
     this._addDescriptor({
       kind: 'range',
-      value: limits,
+      value: [min, max],
       message,
     })
     return this
@@ -181,14 +183,15 @@ class StringSchema extends BaseSchema<string> {
 
   /**
    * 字节长度 (一个中文算3个字节)
-   * @param limits 字节长度范围
+   * @param min 最小字节长度
+   * @param max 最大字节长度
    * @param message 错误信息
    * @returns this
    */
-  byteLen(limits: [number, number], message?: ValrMessage) {
+  byteLen(min: number, max: number, message?: ValrMessage) {
     this._addDescriptor({
       kind: 'byteLen',
-      value: limits,
+      value: [min, max],
       message,
     })
     return this
@@ -304,12 +307,14 @@ class StringSchema extends BaseSchema<string> {
 
   /**
    * ip地址
+   * @param version ip版本 v4/v6
    * @param message 错误信息
    * @returns this
    */
-  ip(message?: ValrMessage) {
+  ip(version?: IpVersion, message?: ValrMessage) {
     this._addDescriptor({
       kind: 'ip',
+      value: version,
       message,
     })
     return this

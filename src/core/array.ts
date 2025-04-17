@@ -10,18 +10,27 @@ class ArraySchema extends BaseSchema<any[]> {
   }
 
   _test(descriptor: BaseDescriptor<any[]>, value: any[]) {
-    if (descriptor.kind === 'range') {
-      const [min, max] = descriptor.value
-      return value.length >= min && value.length <= max
-    }
-    else if (descriptor.kind === 'min') {
+    if (descriptor.kind === 'min') {
       return value.length >= descriptor.value
     }
     else if (descriptor.kind === 'max') {
       return value.length <= descriptor.value
     }
+    else if (descriptor.kind === 'range') {
+      const [min, max] = descriptor.value
+      return value.length >= min && value.length <= max
+    }
     else if (descriptor.kind === 'len') {
       return value.length === descriptor.value
+    }
+    else if (descriptor.kind === 'includes') {
+      return descriptor.value.every(item => value.includes(item))
+    }
+    else if (descriptor.kind === 'excludes') {
+      return descriptor.value.every(item => !value.includes(item))
+    }
+    else if (descriptor.kind === 'unique') {
+      return new Set(value).size === value.length
     }
     return true
   }
@@ -73,14 +82,58 @@ class ArraySchema extends BaseSchema<any[]> {
 
   /**
    * 数组范围
-   * @param limits 范围 [min, max]
+   * @param min 最小长度
+   * @param max 最大长度
    * @param message 错误信息
    * @returns this
    */
-  range(limits: [number, number], message?: ValrMessage) {
+  range(min: number, max: number, message?: ValrMessage) {
     this._addDescriptor({
       kind: 'range',
-      value: limits,
+      value: [min, max],
+      message,
+    })
+    return this
+  }
+
+  /**
+   * includes
+   *  @param value 包含的值
+   * @param message 错误信息
+   * @returns this
+   */
+  includes(value: any, message?: ValrMessage) {
+    this._addDescriptor({
+      kind: 'includes',
+      value,
+      message,
+    })
+    return this
+  }
+
+  /**
+   * excludes
+   * @param value 排除的值
+   * @param message 错误信息
+   * @returns this
+   */
+  excludes(value: any, message?: ValrMessage) {
+    this._addDescriptor({
+      kind: 'excludes',
+      value,
+      message,
+    })
+    return this
+  }
+
+  /**
+   * unique
+   * @param message 错误信息
+   * @returns this
+   */
+  unique(message?: ValrMessage) {
+    this._addDescriptor({
+      kind: 'unique',
       message,
     })
     return this

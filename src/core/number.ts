@@ -1,5 +1,5 @@
 import type { BaseDescriptor, BaseSchemaOptions, ValrMessage } from '../types'
-import isDecimal from '../utils/is-decimal'
+import isFloat from '../utils/is-float'
 import isInteger from '../utils/is-integer'
 import isPort from '../utils/is-port'
 import BaseSchema from './base'
@@ -16,8 +16,8 @@ class NumberSchema extends BaseSchema<number> {
     if (descriptor.kind === 'integer') {
       return isInteger(value)
     }
-    else if (descriptor.kind === 'decimal') {
-      return isDecimal(value, descriptor.value)
+    else if (descriptor.kind === 'float') {
+      return isFloat(value, descriptor.value)
     }
     else if (descriptor.kind === 'range') {
       const [min, max] = descriptor.value
@@ -71,14 +71,14 @@ class NumberSchema extends BaseSchema<number> {
 
   /**
    * 小数位数
-   * @param digits 小数位数
+   * @param places 小数位数
    * @param message 错误信息
    * @returns this
    */
-  decimal(digits: number, message?: ValrMessage) {
+  float(places: number, message?: ValrMessage) {
     this._addDescriptor({
-      kind: 'decimal',
-      value: digits,
+      kind: 'float',
+      value: places,
       message,
     })
     return this
@@ -86,14 +86,15 @@ class NumberSchema extends BaseSchema<number> {
 
   /**
    * 数字范围
-   * @param limits 范围 [min, max]
+   * @param min 最小值
+   * @param max 最大值
    * @param message 错误信息
    * @returns this
    */
-  range(limits: [number, number], message?: ValrMessage) {
+  range(min: number, max: number, message?: ValrMessage) {
     this._addDescriptor({
       kind: 'range',
-      value: limits,
+      value: [min, max],
       message,
     })
     return this
